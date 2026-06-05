@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">TaskManager</string>
+    <string name="title_tasks">Gestor de Tareas</string>
+    <string name="add_task">Agregar Nueva Tarea</string>
+    <string name="task_name">Nombre de la tarea</string>
+    <string name="task_description">Descripción de la tarea</string>
+    <string name="save_task">Guardar</string>
+    <string name="back">Volver</string>
+    <string name="empty_tasks">No hay tareas registradas</string>
+    <string name="new_task">Nueva Tarea</string>
+    <string name="delete_task">Eliminar tarea</string>
+</resources>
