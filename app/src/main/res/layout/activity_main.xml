@@ -28,6 +28,16 @@
         android:layout_gravity="center"
         android:layout_marginBottom="16dp"/>
 
+    <TextView
+        android:id="@+id/tvEmptyState"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/empty_tasks"
+        android:textAlignment="center"
+        android:textSize="16sp"
+        android:visibility="gone"
+        android:paddingTop="32dp"/>
+
     <ListView
         android:id="@+id/listTasks"
         android:layout_width="match_parent"

@@ -68,6 +68,7 @@ class TaskAdapter(
             notifyDataSetChanged()
         }
 
+        // Removes the selected task
         btnDelete.setOnClickListener {
 
             tasks.remove(task)
@@ -75,6 +76,9 @@ class TaskAdapter(
             activity.saveTaskChanges(tasks)
 
             notifyDataSetChanged()
+
+            // Refreshes the screen when the last task is removed
+            activity.recreate()
         }
 
         return view

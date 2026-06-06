@@ -4,7 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="12dp">
+    android:padding="12dp"
+    android:layout_marginBottom="8dp"
+    android:background="?android:attr/selectableItemBackground">
 
     <!-- Marks the task as completed -->
     <CheckBox
@@ -16,20 +18,22 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingStart="4dp">
 
         <TextView
             android:id="@+id/tvTaskName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textStyle="bold"
-            android:textSize="16sp" />
+            android:textSize="18sp" />
 
         <TextView
             android:id="@+id/tvTaskDescription"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            android:paddingTop="4dp" />
 
     </LinearLayout>
 

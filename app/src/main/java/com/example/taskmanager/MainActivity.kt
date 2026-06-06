@@ -2,8 +2,10 @@ package com.example.taskmanager
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
 import android.widget.ListView
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -15,6 +17,8 @@ import androidx.core.view.WindowInsetsCompat
 class MainActivity : AppCompatActivity() {
 
     private lateinit var listTasks: ListView
+
+    private lateinit var tvEmptyState: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,6 +44,9 @@ class MainActivity : AppCompatActivity() {
 
         listTasks =
             findViewById(R.id.listTasks)
+
+        tvEmptyState =
+            findViewById(R.id.tvEmptyState)
 
         val btnAddTask =
             findViewById<Button>(R.id.btnAddTask)
@@ -74,6 +81,23 @@ class MainActivity : AppCompatActivity() {
             taskManager.getTasks()
                 .sortedBy { it.completed }
                 .toMutableList()
+
+        if (tasks.isEmpty()) {
+
+            tvEmptyState.visibility =
+                View.VISIBLE
+
+            listTasks.visibility =
+                View.GONE
+
+        } else {
+
+            tvEmptyState.visibility =
+                View.GONE
+
+            listTasks.visibility =
+                View.VISIBLE
+        }
 
         val adapter =
             TaskAdapter(

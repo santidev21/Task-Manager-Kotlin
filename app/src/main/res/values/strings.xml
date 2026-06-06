@@ -9,4 +9,6 @@
     <string name="empty_tasks">No hay tareas registradas</string>
     <string name="new_task">Nueva Tarea</string>
     <string name="delete_task">Eliminar tarea</string>
+    <string name="error_task_name_required">El nombre de la tarea es requerido.</string>
+    <string name="task_deleted">Tarea eliminada.</string>
 </resources>

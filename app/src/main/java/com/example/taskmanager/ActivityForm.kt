@@ -50,12 +50,26 @@ class ActivityForm : AppCompatActivity() {
         val taskManager =
             TaskManager(this)
 
-        // Saves the task and returns to the main screen
+        // Validates and saves the task
         btnSaveTask.setOnClickListener {
 
+            val taskName =
+                etTaskName.text.toString().trim()
+
+            val taskDescription =
+                etTaskDescription.text.toString().trim()
+
+            if (taskName.isEmpty()) {
+
+                etTaskName.error =
+                    getString(R.string.error_task_name_required)
+
+                return@setOnClickListener
+            }
+
             val task = Task(
-                name = etTaskName.text.toString(),
-                description = etTaskDescription.text.toString()
+                name = taskName,
+                description = taskDescription
             )
 
             taskManager.saveTask(task)
