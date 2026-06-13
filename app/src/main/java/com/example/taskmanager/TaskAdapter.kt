@@ -15,6 +15,7 @@ class TaskAdapter(
     private val activity: AppCompatActivity,
     private val tasks: MutableList<Task>,
     private val taskManager: TaskManager,
+    private val onEditTask: (Task) -> Unit,
     private val onActionError: (String) -> Unit
 ) : ArrayAdapter<Task>(activity, R.layout.task_item, tasks) {
 
@@ -32,6 +33,7 @@ class TaskAdapter(
         val tvTaskDescription = view.findViewById<TextView>(R.id.tvTaskDescription)
         val tvTaskLocation = view.findViewById<TextView>(R.id.tvTaskLocation)
         val cbCompleted = view.findViewById<CheckBox>(R.id.cbCompleted)
+        val btnEdit = view.findViewById<ImageButton>(R.id.btnEdit)
         val btnDelete = view.findViewById<ImageButton>(R.id.btnDelete)
 
         tvTaskName.text = task.name
@@ -69,6 +71,10 @@ class TaskAdapter(
                     onActionError(exception.message ?: activity.getString(R.string.error_updating_task))
                 }
             )
+        }
+
+        btnEdit.setOnClickListener {
+            onEditTask(task)
         }
 
         btnDelete.setOnClickListener {

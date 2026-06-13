@@ -18,10 +18,24 @@ import com.google.firebase.auth.FirebaseAuth
 
 class ActivityForm : AppCompatActivity() {
 
+    companion object {
+        const val EXTRA_TASK_ID = "extra_task_id"
+        const val EXTRA_TASK_NAME = "extra_task_name"
+        const val EXTRA_TASK_DESCRIPTION = "extra_task_description"
+        const val EXTRA_TASK_LOCATION_NAME = "extra_task_location_name"
+        const val EXTRA_TASK_LATITUDE = "extra_task_latitude"
+        const val EXTRA_TASK_LONGITUDE = "extra_task_longitude"
+        const val EXTRA_TASK_COMPLETED = "extra_task_completed"
+        const val EXTRA_TASK_CREATED_AT = "extra_task_created_at"
+    }
+
     private val auth by lazy { FirebaseAuth.getInstance() }
     private val taskManager by lazy { TaskManager() }
     private var selectedLocation: LatLng? = null
     private var selectedLocationLabel: String = ""
+    private var editingTaskId: String = ""
+    private var editingCompleted: Boolean = false
+    private var editingCreatedAt: Long = 0L
 
     private val placeAutocompleteLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -40,6 +54,8 @@ class ActivityForm : AppCompatActivity() {
                         latLng.latitude,
                         latLng.longitude
                     )
+                } else {
+                    showMessage(getString(R.string.map_location_unavailable))
                 }
             }
             Activity.RESULT_CANCELED -> Unit
@@ -71,6 +87,17 @@ class ActivityForm : AppCompatActivity() {
         val btnSearchLocation = findViewById<MaterialButton>(R.id.btnSearchLocation)
         val btnSaveTask = findViewById<MaterialButton>(R.id.btnSaveTask)
         val btnBack = findViewById<MaterialButton>(R.id.btnBack)
+        val tvFormTitle = findViewById<android.widget.TextView>(R.id.tvFormTitle)
+        val tvFormSubtitle = findViewById<android.widget.TextView>(R.id.tvFormSubtitle)
+
+        restoreTaskState(etTaskName, etTaskDescription, etTaskLocation, tilTaskLocation)
+
+        val isEditing = editingTaskId.isNotBlank()
+        if (isEditing) {
+            tvFormTitle.text = getString(R.string.edit_task)
+            tvFormSubtitle.text = getString(R.string.edit_task_subtitle)
+            btnSaveTask.text = getString(R.string.update_task)
+        }
 
         etTaskLocation.setOnClickListener { openPlaceAutocomplete() }
         btnSearchLocation.setOnClickListener { openPlaceAutocomplete() }
@@ -89,31 +116,80 @@ class ActivityForm : AppCompatActivity() {
             }
 
             val task = Task(
+                id = editingTaskId,
                 name = taskName,
                 description = taskDescription,
+                completed = editingCompleted,
                 locationName = selectedLocationLabel,
                 latitude = selectedLocation?.latitude ?: 0.0,
-                longitude = selectedLocation?.longitude ?: 0.0
+                longitude = selectedLocation?.longitude ?: 0.0,
+                createdAt = if (isEditing && editingCreatedAt != 0L) editingCreatedAt else System.currentTimeMillis()
             )
 
-            taskManager.saveTask(
-                task = task,
-                onSuccess = {
-                    showMessage(getString(R.string.task_saved))
-                    finish()
-                },
-                onError = { exception ->
-                    showMessage(exception.message ?: getString(R.string.error_saving_task))
-                }
-            )
+            if (isEditing) {
+                taskManager.updateTask(
+                    task = task,
+                    onSuccess = {
+                        showMessage(getString(R.string.task_updated))
+                        finish()
+                    },
+                    onError = { exception ->
+                        showMessage(exception.message ?: getString(R.string.error_updating_task))
+                    }
+                )
+            } else {
+                taskManager.saveTask(
+                    task = task,
+                    onSuccess = {
+                        showMessage(getString(R.string.task_saved))
+                        finish()
+                    },
+                    onError = { exception ->
+                        showMessage(exception.message ?: getString(R.string.error_saving_task))
+                    }
+                )
+            }
         }
 
         btnBack.setOnClickListener { finish() }
 
-        tilTaskLocation.helperText = getString(R.string.task_location_hint)
+        if (selectedLocation == null) {
+            tilTaskLocation.helperText = getString(R.string.task_location_hint)
+        }
         etTaskLocation.isFocusable = false
         etTaskLocation.isClickable = true
         etTaskLocation.isCursorVisible = false
+    }
+
+    private fun restoreTaskState(
+        etTaskName: TextInputEditText,
+        etTaskDescription: TextInputEditText,
+        etTaskLocation: TextInputEditText,
+        tilTaskLocation: TextInputLayout
+    ) {
+        editingTaskId = intent.getStringExtra(EXTRA_TASK_ID).orEmpty()
+        editingCompleted = intent.getBooleanExtra(EXTRA_TASK_COMPLETED, false)
+        editingCreatedAt = intent.getLongExtra(EXTRA_TASK_CREATED_AT, 0L)
+
+        val taskName = intent.getStringExtra(EXTRA_TASK_NAME).orEmpty()
+        val taskDescription = intent.getStringExtra(EXTRA_TASK_DESCRIPTION).orEmpty()
+        val taskLocationName = intent.getStringExtra(EXTRA_TASK_LOCATION_NAME).orEmpty()
+        val taskLatitude = intent.getDoubleExtra(EXTRA_TASK_LATITUDE, 0.0)
+        val taskLongitude = intent.getDoubleExtra(EXTRA_TASK_LONGITUDE, 0.0)
+
+        etTaskName.setText(taskName)
+        etTaskDescription.setText(taskDescription)
+
+        if (taskLocationName.isNotBlank() && (taskLatitude != 0.0 || taskLongitude != 0.0)) {
+            selectedLocation = LatLng(taskLatitude, taskLongitude)
+            selectedLocationLabel = taskLocationName
+            etTaskLocation.setText(taskLocationName)
+            tilTaskLocation.helperText = getString(
+                R.string.task_location_ready,
+                taskLatitude,
+                taskLongitude
+            )
+        }
     }
 
     private fun ensurePlacesInitialized() {

@@ -38,6 +38,8 @@
     <string name="empty_tasks">No hay tareas registradas</string>
     <string name="new_task">Nueva tarea</string>
     <string name="new_task_subtitle">Escribe el nombre y la descripción de la tarea.</string>
+    <string name="edit_task">Editar tarea</string>
+    <string name="edit_task_subtitle">Actualiza los datos de la tarea y guarda los cambios.</string>
     <string name="task_name">Nombre de la tarea</string>
     <string name="task_description">Descripción de la tarea</string>
     <string name="task_location_optional">Ubicación opcional</string>
@@ -45,8 +47,10 @@
     <string name="search_location">Buscar ubicación</string>
     <string name="task_location_ready">Ubicación guardada: %1$.6f, %2$.6f</string>
     <string name="save_task">Guardar</string>
+    <string name="update_task">Actualizar</string>
     <string name="back">Volver</string>
     <string name="task_saved">Tarea guardada correctamente.</string>
+    <string name="task_updated">Tarea actualizada correctamente.</string>
     <string name="error_task_name_required">El nombre de la tarea es requerido.</string>
     <string name="error_loading_tasks">No fue posible cargar las tareas.</string>
     <string name="error_saving_task">No fue posible guardar la tarea.</string>
@@ -54,6 +58,7 @@
     <string name="error_deleting_task">No fue posible eliminar la tarea.</string>
 
     <string name="delete_task">Eliminar tarea</string>
+    <string name="edit_task_action">Editar tarea</string>
     <string name="delete_task_title">Eliminar tarea</string>
     <string name="delete_task_message">¿Seguro que deseas eliminar esta tarea?</string>
     <string name="cancel">Cancelar</string>

@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
         tvUserEmail = findViewById(R.id.tvUserEmail)
 
         findViewById<Button>(R.id.btnAddTask).setOnClickListener {
-            startActivity(Intent(this, ActivityForm::class.java))
+            openTaskForm()
         }
 
         findViewById<Button>(R.id.btnOpenMap).setOnClickListener {
@@ -103,8 +103,26 @@ class MainActivity : AppCompatActivity() {
             activity = this,
             tasks = sortedTasks,
             taskManager = taskManager,
+            onEditTask = { task -> openTaskForm(task) },
             onActionError = { message -> showMessage(message) }
         )
+    }
+
+    private fun openTaskForm(task: Task? = null) {
+        val intent = Intent(this, ActivityForm::class.java)
+
+        task?.let {
+            intent.putExtra(ActivityForm.EXTRA_TASK_ID, it.id)
+            intent.putExtra(ActivityForm.EXTRA_TASK_NAME, it.name)
+            intent.putExtra(ActivityForm.EXTRA_TASK_DESCRIPTION, it.description)
+            intent.putExtra(ActivityForm.EXTRA_TASK_LOCATION_NAME, it.locationName)
+            intent.putExtra(ActivityForm.EXTRA_TASK_LATITUDE, it.latitude)
+            intent.putExtra(ActivityForm.EXTRA_TASK_LONGITUDE, it.longitude)
+            intent.putExtra(ActivityForm.EXTRA_TASK_COMPLETED, it.completed)
+            intent.putExtra(ActivityForm.EXTRA_TASK_CREATED_AT, it.createdAt)
+        }
+
+        startActivity(intent)
     }
 
     private fun showLogoutConfirmation() {
