@@ -3,22 +3,40 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/task_background"
-    android:fillViewport="true">
+    android:fillViewport="true"
+    android:background="@color/task_background">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:gravity="center"
+        android:padding="24dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/register_title"
+            android:textColor="@color/task_on_surface"
+            android:textSize="30sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:text="@string/register_subtitle"
+            android:textColor="@color/task_on_surface"
+            android:textSize="15sp" />
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
             app:cardBackgroundColor="@color/task_surface"
             app:cardCornerRadius="24dp"
             app:cardElevation="2dp"
-            app:cardPreventCornerOverlap="true"
             app:strokeColor="@color/task_outline"
             app:strokeWidth="1dp">
 
@@ -29,25 +47,15 @@
                 android:padding="20dp">
 
                 <TextView
-                    android:id="@+id/tvFormTitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/new_task"
+                    android:text="@string/register_title"
                     android:textColor="@color/task_on_surface"
-                    android:textSize="26sp"
+                    android:textSize="22sp"
                     android:textStyle="bold" />
 
-                <TextView
-                    android:id="@+id/tvFormSubtitle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="@string/new_task_subtitle"
-                    android:textColor="@color/task_on_surface"
-                    android:textSize="15sp" />
-
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/tilTaskName"
+                    android:id="@+id/tilRegisterEmail"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
@@ -55,14 +63,16 @@
                     app:hintEnabled="true">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etTaskName"
+                        android:id="@+id/etRegisterEmail"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="@string/task_name" />
+                        android:hint="@string/auth_email_hint"
+                        android:inputType="textEmailAddress"
+                        android:importantForAutofill="yes" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/tilTaskDescription"
+                    android:id="@+id/tilRegisterPassword"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
@@ -70,54 +80,44 @@
                     app:hintEnabled="true">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etTaskDescription"
+                        android:id="@+id/etRegisterPassword"
                         android:layout_width="match_parent"
-                        android:layout_height="140dp"
-                        android:gravity="top"
-                        android:hint="@string/task_description"
-                        android:inputType="textMultiLine" />
+                        android:layout_height="wrap_content"
+                        android:hint="@string/auth_password_hint"
+                        android:inputType="textPassword"
+                        android:importantForAutofill="yes" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/tilTaskLocation"
+                    android:id="@+id/tilConfirmPassword"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     app:boxBackgroundMode="filled"
-                    app:hintEnabled="true"
-                    app:helperText="@string/task_location_hint">
+                    app:hintEnabled="true">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etTaskLocation"
+                        android:id="@+id/etConfirmPassword"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="@string/task_location_optional"
-                        android:inputType="none"
-                        android:focusable="false"
-                        android:clickable="true"
-                        android:cursorVisible="false" />
+                        android:hint="@string/register_confirm_password_hint"
+                        android:inputType="textPassword"
+                        android:importantForAutofill="yes" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnSearchLocation"
+                    android:id="@+id/btnCreateAccount"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:text="@string/search_location" />
+                    android:layout_marginTop="24dp"
+                    android:text="@string/auth_create_account" />
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnSaveTask"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="18dp"
-                    android:text="@string/save_task" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnBack"
+                    android:id="@+id/btnBackToLogin"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:text="@string/back" />
+                    android:text="@string/register_back_to_login" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
     </LinearLayout>

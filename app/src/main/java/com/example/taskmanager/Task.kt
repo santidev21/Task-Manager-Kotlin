@@ -1,12 +1,12 @@
 package com.example.taskmanager
 
-/**
- * Represents a task created by the user.
- *
- * A data class was chosen because this object only stores data
- */
 data class Task(
-    val name: String,
-    val description: String,
-    var completed: Boolean = false
+    var id: String = "",
+    var name: String = "",
+    var description: String = "",
+    var completed: Boolean = false,
+    var locationName: String = "",
+    var latitude: Double = 0.0,
+    var longitude: Double = 0.0,
+    var createdAt: Long = 0L
 )

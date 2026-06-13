@@ -1,14 +1,74 @@
 <resources>
     <string name="app_name">TaskManager</string>
-    <string name="title_tasks">Gestor de Tareas</string>
-    <string name="add_task">Agregar Nueva Tarea</string>
+    <string name="auth_title">Inicia sesión</string>
+    <string name="auth_subtitle">Accede a tus tareas desde cualquier dispositivo.</string>
+    <string name="auth_email_hint">Correo electrónico</string>
+    <string name="auth_password_hint">Contraseña</string>
+    <string name="auth_sign_in">Iniciar sesión</string>
+    <string name="auth_create_account">Crear cuenta</string>
+    <string name="auth_no_account">¿No tienes cuenta? Regístrate</string>
+    <string name="auth_error_invalid_email">Ingresa un correo electrónico válido.</string>
+    <string name="auth_error_email_required">El correo electrónico es obligatorio.</string>
+    <string name="auth_error_password_required">La contraseña es obligatoria.</string>
+    <string name="auth_error_failed">No fue posible iniciar sesión.</string>
+    <string name="auth_error_user_not_found">No encontramos una cuenta con ese correo.</string>
+    <string name="auth_error_wrong_password">La contraseña es incorrecta.</string>
+    <string name="auth_error_invalid_credentials">El correo o la contraseña no son válidos.</string>
+
+    <string name="register_title">Crear cuenta</string>
+    <string name="register_subtitle">Registra tu usuario para sincronizar tus tareas.</string>
+    <string name="register_confirm_password_hint">Confirmar contraseña</string>
+    <string name="register_back_to_login">Volver al inicio de sesión</string>
+    <string name="register_error_passwords_mismatch">Las contraseñas no coinciden.</string>
+    <string name="register_error_password_short">La contraseña debe tener al menos 6 caracteres.</string>
+    <string name="register_error_failed">No fue posible crear la cuenta.</string>
+    <string name="register_error_email_in_use">Ese correo ya está registrado.</string>
+
+    <string name="main_title">Gestor de Tareas</string>
+    <string name="main_subtitle">Organiza, completa y sincroniza tus pendientes.</string>
+    <string name="main_signed_in_as">Sesión activa: %1$s</string>
+    <string name="main_signed_in_as_guest">Sesión activa</string>
+    <string name="main_open_map">Ver mapa</string>
+    <string name="main_logout">Cerrar sesión</string>
+    <string name="logout_title">Cerrar sesión</string>
+    <string name="logout_message">¿Deseas cerrar tu sesión actual?</string>
+    <string name="logout_confirm">Cerrar sesión</string>
+
+    <string name="add_task">Agregar nueva tarea</string>
+    <string name="empty_tasks">No hay tareas registradas</string>
+    <string name="new_task">Nueva tarea</string>
+    <string name="new_task_subtitle">Escribe el nombre y la descripción de la tarea.</string>
     <string name="task_name">Nombre de la tarea</string>
     <string name="task_description">Descripción de la tarea</string>
+    <string name="task_location_optional">Ubicación opcional</string>
+    <string name="task_location_hint">Busca una ubicación en Google Maps o déjala vacía.</string>
+    <string name="search_location">Buscar ubicación</string>
+    <string name="task_location_ready">Ubicación guardada: %1$.6f, %2$.6f</string>
     <string name="save_task">Guardar</string>
     <string name="back">Volver</string>
-    <string name="empty_tasks">No hay tareas registradas</string>
-    <string name="new_task">Nueva Tarea</string>
-    <string name="delete_task">Eliminar tarea</string>
+    <string name="task_saved">Tarea guardada correctamente.</string>
     <string name="error_task_name_required">El nombre de la tarea es requerido.</string>
-    <string name="task_deleted">Tarea eliminada.</string>
+    <string name="error_loading_tasks">No fue posible cargar las tareas.</string>
+    <string name="error_saving_task">No fue posible guardar la tarea.</string>
+    <string name="error_updating_task">No fue posible actualizar la tarea.</string>
+    <string name="error_deleting_task">No fue posible eliminar la tarea.</string>
+
+    <string name="delete_task">Eliminar tarea</string>
+    <string name="delete_task_title">Eliminar tarea</string>
+    <string name="delete_task_message">¿Seguro que deseas eliminar esta tarea?</string>
+    <string name="cancel">Cancelar</string>
+    <string name="confirm">Confirmar</string>
+    <string name="task_location_label">Ubicación</string>
+    <string name="task_no_location">Sin ubicación asociada</string>
+
+    <string name="map_title">Ubicación actual</string>
+    <string name="map_subtitle">Google Maps muestra tu posición actual y sirve como base para tareas ubicadas.</string>
+    <string name="map_loading">Cargando mapa...</string>
+    <string name="map_permission_required">Se requiere permiso de ubicación para mostrar tu posición.</string>
+    <string name="map_permission_denied">No se concedió el permiso de ubicación.</string>
+    <string name="map_location_unavailable">No fue posible obtener la ubicación actual. Se muestra una ubicación de referencia.</string>
+    <string name="map_marker_title">Tu ubicación</string>
+    <string name="map_tasks_loaded">Tareas con ubicación mostradas en el mapa</string>
+    <string name="map_tasks_no_location">No hay tareas con ubicación asociada</string>
+    <string name="map_back">Volver</string>
 </resources>

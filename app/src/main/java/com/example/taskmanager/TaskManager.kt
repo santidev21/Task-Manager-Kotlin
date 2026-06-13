@@ -1,88 +1,121 @@
 package com.example.taskmanager
 
-import android.content.Context
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
-/**
- * Handles task storage using SharedPreferences.
- *
- * Tasks are stored as JSON to allow saving multiple
- * Task objects in local storage.
- */
-class TaskManager(
-    private val context: Context
-) {
+class TaskManager {
 
-    private val sharedPreferences =
-        context.getSharedPreferences("Tasks", Context.MODE_PRIVATE)
+    private val auth = FirebaseAuth.getInstance()
+    private val database = FirebaseDatabase.getInstance()
 
-    private val gson = Gson()
+    private fun tasksReference(): DatabaseReference {
+        val userId = auth.currentUser?.uid
+            ?: throw IllegalStateException("User is not authenticated")
 
-    /**
-     * Saves a new task in local storage.
-     */
-    fun saveTask(task: Task) {
-
-        val tasks = getTasks().toMutableList()
-
-        tasks.add(task)
-
-        val json = gson.toJson(tasks)
-
-        sharedPreferences
-            .edit()
-            .putString("tasks", json)
-            .apply()
+        return database.reference
+            .child("users")
+            .child(userId)
+            .child("tasks")
     }
 
-    /**
-     * Saves the complete task list in local storage.
-     */
-    fun saveTasks(tasks: List<Task>) {
+    fun observeTasks(
+        onTasksLoaded: (List<Task>) -> Unit,
+        onError: (Exception) -> Unit
+    ): ValueEventListener {
+        val listener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val tasks = mutableListOf<Task>()
 
-        val json = gson.toJson(tasks)
+                snapshot.children.forEach { child ->
+                    val task = child.getValue(Task::class.java)
+                    if (task != null) {
+                        tasks.add(task.copy(id = child.key.orEmpty()))
+                    }
+                }
 
-        sharedPreferences
-            .edit()
-            .putString("tasks", json)
-            .apply()
-    }
+                onTasksLoaded(tasks)
+            }
 
-    /**
-     * Returns all saved tasks.
-     */
-    fun getTasks(): List<Task> {
-
-        val json =
-            sharedPreferences.getString("tasks", null)
-
-        if (json.isNullOrEmpty()) {
-            return emptyList()
+            override fun onCancelled(error: DatabaseError) {
+                onError(error.toException())
+            }
         }
 
-        val type =
-            object : TypeToken<List<Task>>() {}.type
-
-        return gson.fromJson(json, type)
+        tasksReference().addValueEventListener(listener)
+        return listener
     }
 
-    /**
-     * Deletes a task from local storage.
-     */
-    fun deleteTask(task: Task) {
+    fun removeTasksListener(listener: ValueEventListener) {
+        try {
+            tasksReference().removeEventListener(listener)
+        } catch (_: Exception) {
+        }
+    }
 
-        val tasks =
-            getTasks().toMutableList()
+    fun saveTask(
+        task: Task,
+        onSuccess: (Task) -> Unit,
+        onError: (Exception) -> Unit
+    ) {
+        try {
+            val reference = tasksReference()
+            val taskId = task.id.ifBlank {
+                reference.push().key ?: throw IllegalStateException("Unable to generate a task id")
+            }
 
-        tasks.remove(task)
+            val taskToSave = task.copy(
+                id = taskId,
+                createdAt = if (task.createdAt == 0L) System.currentTimeMillis() else task.createdAt
+            )
 
-        val json =
-            gson.toJson(tasks)
+            reference.child(taskId)
+                .setValue(taskToSave)
+                .addOnSuccessListener { onSuccess(taskToSave) }
+                .addOnFailureListener { onError(it as? Exception ?: Exception(it)) }
+        } catch (exception: Exception) {
+            onError(exception)
+        }
+    }
 
-        sharedPreferences
-            .edit()
-            .putString("tasks", json)
-            .apply()
+    fun updateTask(
+        task: Task,
+        onSuccess: () -> Unit,
+        onError: (Exception) -> Unit
+    ) {
+        try {
+            val taskId = task.id.ifBlank {
+                throw IllegalArgumentException("Task id is required")
+            }
+
+            tasksReference().child(taskId)
+                .setValue(task)
+                .addOnSuccessListener { onSuccess() }
+                .addOnFailureListener { onError(it as? Exception ?: Exception(it)) }
+        } catch (exception: Exception) {
+            onError(exception)
+        }
+    }
+
+    fun deleteTask(
+        taskId: String,
+        onSuccess: () -> Unit,
+        onError: (Exception) -> Unit
+    ) {
+        try {
+            if (taskId.isBlank()) {
+                throw IllegalArgumentException("Task id is required")
+            }
+
+            tasksReference().child(taskId)
+                .removeValue()
+                .addOnSuccessListener { onSuccess() }
+                .addOnFailureListener { onError(it as? Exception ?: Exception(it)) }
+        } catch (exception: Exception) {
+            onError(exception)
+        }
     }
 }

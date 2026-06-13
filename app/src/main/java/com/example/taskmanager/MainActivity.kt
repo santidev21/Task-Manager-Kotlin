@@ -6,116 +6,126 @@ import android.view.View
 import android.widget.Button
 import android.widget.ListView
 import android.widget.TextView
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.ValueEventListener
 
-/**
- * Main screen that displays the task list.
- */
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var listTasks: ListView
+    private val auth by lazy { FirebaseAuth.getInstance() }
+    private val taskManager by lazy { TaskManager() }
 
+    private var tasksListener: ValueEventListener? = null
+
+    private lateinit var listTasks: ListView
     private lateinit var tvEmptyState: TextView
+    private lateinit var tvUserEmail: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        enableEdgeToEdge()
+        if (auth.currentUser == null) {
+            openAuthScreen()
+            return
+        }
 
         setContentView(R.layout.activity_main)
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { view, insets ->
+        listTasks = findViewById(R.id.listTasks)
+        tvEmptyState = findViewById(R.id.tvEmptyState)
+        tvUserEmail = findViewById(R.id.tvUserEmail)
 
-            val systemBars =
-                insets.getInsets(WindowInsetsCompat.Type.systemBars())
-
-            view.setPadding(
-                systemBars.left,
-                systemBars.top,
-                systemBars.right,
-                systemBars.bottom
-            )
-
-            insets
+        findViewById<Button>(R.id.btnAddTask).setOnClickListener {
+            startActivity(Intent(this, ActivityForm::class.java))
         }
 
-        listTasks =
-            findViewById(R.id.listTasks)
+        findViewById<Button>(R.id.btnOpenMap).setOnClickListener {
+            startActivity(Intent(this, MapActivity::class.java))
+        }
 
-        tvEmptyState =
-            findViewById(R.id.tvEmptyState)
+        findViewById<Button>(R.id.btnLogout).setOnClickListener {
+            showLogoutConfirmation()
+        }
 
-        val btnAddTask =
-            findViewById<Button>(R.id.btnAddTask)
+        tvUserEmail.text = auth.currentUser?.email?.let {
+            getString(R.string.main_signed_in_as, it)
+        } ?: getString(R.string.main_signed_in_as_guest)
+    }
 
-        btnAddTask.setOnClickListener {
+    override fun onStart() {
+        super.onStart()
 
-            val intent =
-                Intent(this, ActivityForm::class.java)
+        if (auth.currentUser == null) {
+            openAuthScreen()
+            return
+        }
 
-            startActivity(intent)
+        observeTasks()
+    }
+
+    override fun onStop() {
+        removeTasksListener()
+        super.onStop()
+    }
+
+    private fun observeTasks() {
+        removeTasksListener()
+
+        tasksListener = taskManager.observeTasks(
+            onTasksLoaded = { tasks -> renderTasks(tasks) },
+            onError = { exception -> showMessage(exception.message ?: getString(R.string.error_loading_tasks)) }
+        )
+    }
+
+    private fun removeTasksListener() {
+        tasksListener?.let {
+            taskManager.removeTasksListener(it)
+            tasksListener = null
         }
     }
 
-    /**
-     * Reload tasks every time the screen becomes visible.
-     */
-    override fun onResume() {
-        super.onResume()
+    private fun renderTasks(tasks: List<Task>) {
+        val sortedTasks = tasks.sortedWith(
+            compareBy<Task> { it.completed }.thenByDescending { it.createdAt }
+        ).toMutableList()
 
-        loadTasks()
-    }
-
-    /**
-     * Loads all tasks from local storage and displays them.
-     */
-    private fun loadTasks() {
-
-        val taskManager =
-            TaskManager(this)
-
-        val tasks =
-            taskManager.getTasks()
-                .sortedBy { it.completed }
-                .toMutableList()
-
-        if (tasks.isEmpty()) {
-
-            tvEmptyState.visibility =
-                View.VISIBLE
-
-            listTasks.visibility =
-                View.GONE
-
+        if (sortedTasks.isEmpty()) {
+            tvEmptyState.visibility = View.VISIBLE
+            listTasks.visibility = View.GONE
         } else {
-
-            tvEmptyState.visibility =
-                View.GONE
-
-            listTasks.visibility =
-                View.VISIBLE
+            tvEmptyState.visibility = View.GONE
+            listTasks.visibility = View.VISIBLE
         }
 
-        val adapter =
-            TaskAdapter(
-                this,
-                tasks
-            )
-
-        listTasks.adapter = adapter
+        listTasks.adapter = TaskAdapter(
+            activity = this,
+            tasks = sortedTasks,
+            taskManager = taskManager,
+            onActionError = { message -> showMessage(message) }
+        )
     }
 
-    /**
-     * Saves changes made from the adapter.
-     */
-    fun saveTaskChanges(tasks: List<Task>) {
+    private fun showLogoutConfirmation() {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.logout_title)
+            .setMessage(R.string.logout_message)
+            .setNegativeButton(R.string.cancel, null)
+            .setPositiveButton(R.string.logout_confirm) { _, _ ->
+                removeTasksListener()
+                auth.signOut()
+                openAuthScreen()
+            }
+            .show()
+    }
 
-        val taskManager =
-            TaskManager(this)
+    private fun openAuthScreen() {
+        startActivity(Intent(this, AuthActivity::class.java))
+        finish()
+    }
 
-        taskManager.saveTasks(tasks)
+    private fun showMessage(message: String) {
+        Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show()
     }
 }
