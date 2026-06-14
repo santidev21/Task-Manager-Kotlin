@@ -17,6 +17,7 @@ class AuthActivity : AppCompatActivity() {
 
     private val auth by lazy { FirebaseAuth.getInstance() }
 
+    // Sets up the login screen and redirects signed-in users to the main area.
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -57,6 +58,7 @@ class AuthActivity : AppCompatActivity() {
         }
     }
 
+    // Validates the email format and shows the error inline when it is invalid.
     private fun validateEmail(
         email: String,
         tilEmail: TextInputLayout
@@ -74,7 +76,7 @@ class AuthActivity : AppCompatActivity() {
         }
     }
 
-
+    // Translates Firebase login errors into messages that are easier to understand.
     private fun resolveLoginError(exception: Exception): String {
         return when (exception) {
             is FirebaseAuthInvalidUserException -> getString(R.string.auth_error_user_not_found)
@@ -90,6 +92,7 @@ class AuthActivity : AppCompatActivity() {
         }
     }
 
+    // Checks that the password field is not empty.
     private fun validatePassword(
         password: String,
         tilPassword: TextInputLayout
@@ -102,11 +105,13 @@ class AuthActivity : AppCompatActivity() {
         }
     }
 
+    // Opens the authenticated area and clears the back stack.
     private fun openMainScreen() {
         startActivity(Intent(this, MainActivity::class.java))
         finish()
     }
 
+    // Displays a short feedback message at the bottom of the screen.
     private fun showMessage(message: String) {
         Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show()
     }

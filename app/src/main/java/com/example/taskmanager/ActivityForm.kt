@@ -37,6 +37,7 @@ class ActivityForm : AppCompatActivity() {
     private var editingCompleted: Boolean = false
     private var editingCreatedAt: Long = 0L
 
+    // Handles the Places autocomplete result and stores the selected coordinates.
     private val placeAutocompleteLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -67,6 +68,7 @@ class ActivityForm : AppCompatActivity() {
         }
     }
 
+    // Loads the screen in create or edit mode depending on the intent extras.
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -161,6 +163,7 @@ class ActivityForm : AppCompatActivity() {
         etTaskLocation.isCursorVisible = false
     }
 
+    // Restores the task data when the form is opened for editing.
     private fun restoreTaskState(
         etTaskName: TextInputEditText,
         etTaskDescription: TextInputEditText,
@@ -192,12 +195,14 @@ class ActivityForm : AppCompatActivity() {
         }
     }
 
+    // Initializes the Places SDK once per process.
     private fun ensurePlacesInitialized() {
         if (!Places.isInitialized()) {
             Places.initializeWithNewPlacesApiEnabled(applicationContext, BuildConfig.PLACES_API_KEY)
         }
     }
 
+    // Opens the full-screen Places picker so the user selects a valid location.
     private fun openPlaceAutocomplete() {
         val fields = listOf(
             Place.Field.ID,
@@ -214,11 +219,13 @@ class ActivityForm : AppCompatActivity() {
         placeAutocompleteLauncher.launch(intent)
     }
 
+    // Returns to the authentication screen if the session is gone.
     private fun openAuthScreen() {
         startActivity(Intent(this, AuthActivity::class.java))
         finish()
     }
 
+    // Displays a short message at the bottom of the screen.
     private fun showMessage(message: String) {
         Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show()
     }

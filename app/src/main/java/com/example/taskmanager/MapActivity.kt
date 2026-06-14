@@ -36,6 +36,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var tvMapStatus: TextView
 
+    // Requests location permission and updates the map state based on the result.
     private val permissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
@@ -50,6 +51,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
+    // Sets up the map screen and redirects unauthenticated users away.
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -71,16 +73,19 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         mapFragment.getMapAsync(this)
     }
 
+    // Starts the Firebase observer so task markers stay in sync.
     override fun onStart() {
         super.onStart()
         observeTasks()
     }
 
+    // Removes the Firebase observer when the activity is no longer visible.
     override fun onStop() {
         removeTasksListener()
         super.onStop()
     }
 
+    // Receives the map instance and triggers the first location check.
     override fun onMapReady(map: GoogleMap) {
         googleMap = map
         map.uiSettings.isZoomControlsEnabled = true
@@ -94,6 +99,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
+    // Subscribes to Firebase task updates so markers can be redrawn.
     private fun observeTasks() {
         removeTasksListener()
         tasksListener = taskManager.observeTasks(
@@ -107,6 +113,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         )
     }
 
+    // Detaches the current Firebase listener to avoid duplicate updates.
     private fun removeTasksListener() {
         tasksListener?.let {
             taskManager.removeTasksListener(it)
@@ -114,6 +121,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
+    // Launches the runtime prompt for location access.
     private fun requestLocationPermission() {
         permissionLauncher.launch(
             arrayOf(
@@ -123,6 +131,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         )
     }
 
+    // Checks whether the app can safely access the device location.
     private fun hasLocationPermission(): Boolean {
         val fineLocationGranted = ContextCompat.checkSelfPermission(
             this,
@@ -137,6 +146,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         return fineLocationGranted || coarseLocationGranted
     }
 
+    // Reads the last known position and refreshes the map camera and markers.
     private fun showCurrentLocation() {
         if (!hasLocationPermission()) {
             requestLocationPermission()
@@ -169,6 +179,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             }
     }
 
+    // Clears and redraws the map with the current location and saved task markers.
     private fun renderMap(statusMessage: String? = null) {
         val map = googleMap ?: return
 
@@ -216,11 +227,13 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
+    // Returns to the authentication screen if the session is missing.
     private fun openAuthScreen() {
         startActivity(Intent(this, AuthActivity::class.java))
         finish()
     }
 
+    // Displays a short message at the bottom of the screen.
     private fun showMessage(message: String) {
         Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show()
     }

@@ -17,6 +17,7 @@ class RegisterActivity : AppCompatActivity() {
 
     private val auth by lazy { FirebaseAuth.getInstance() }
 
+    // Sets up the registration screen and bypasses it for signed-in users.
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -61,7 +62,7 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 
-
+    // Converts Firebase registration failures into readable messages.
     private fun resolveRegisterError(exception: Exception): String {
         return when (exception) {
             is FirebaseAuthUserCollisionException -> getString(R.string.register_error_email_in_use)
@@ -76,6 +77,7 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 
+    // Validates that the email has a proper format and is not empty.
     private fun validateEmail(
         email: String,
         tilEmail: TextInputLayout
@@ -93,6 +95,7 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 
+    // Ensures the password meets the minimum Firebase length requirement.
     private fun validatePassword(
         password: String,
         tilPassword: TextInputLayout
@@ -110,6 +113,7 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 
+    // Verifies that both password fields match before account creation.
     private fun validateConfirmation(
         password: String,
         confirmation: String,
@@ -123,11 +127,13 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 
+    // Opens the main screen after a successful registration.
     private fun openMainScreen() {
         startActivity(Intent(this, MainActivity::class.java))
         finish()
     }
 
+    // Displays a short feedback message at the bottom of the screen.
     private fun showMessage(message: String) {
         Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show()
     }

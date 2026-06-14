@@ -23,6 +23,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tvEmptyState: TextView
     private lateinit var tvUserEmail: TextView
 
+    // Sets up the dashboard and redirects unauthenticated users to login.
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -54,6 +55,7 @@ class MainActivity : AppCompatActivity() {
         } ?: getString(R.string.main_signed_in_as_guest)
     }
 
+    // Starts the Firebase listener that keeps the list in sync.
     override fun onStart() {
         super.onStart()
 
@@ -65,11 +67,13 @@ class MainActivity : AppCompatActivity() {
         observeTasks()
     }
 
+    // Removes the listener to avoid leaks and duplicate updates.
     override fun onStop() {
         removeTasksListener()
         super.onStop()
     }
 
+    // Subscribes to the current user's tasks and refreshes the list on changes.
     private fun observeTasks() {
         removeTasksListener()
 
@@ -79,6 +83,7 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
+    // Safely detaches the active Firebase listener.
     private fun removeTasksListener() {
         tasksListener?.let {
             taskManager.removeTasksListener(it)
@@ -86,6 +91,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // Sorts the tasks and refreshes the adapter with the latest snapshot.
     private fun renderTasks(tasks: List<Task>) {
         val sortedTasks = tasks.sortedWith(
             compareBy<Task> { it.completed }.thenByDescending { it.createdAt }
@@ -108,6 +114,7 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
+    // Opens the form in create or edit mode depending on the provided task.
     private fun openTaskForm(task: Task? = null) {
         val intent = Intent(this, ActivityForm::class.java)
 
@@ -125,6 +132,7 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
+    // Asks the user to confirm sign-out before clearing the session.
     private fun showLogoutConfirmation() {
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.logout_title)
@@ -138,11 +146,13 @@ class MainActivity : AppCompatActivity() {
             .show()
     }
 
+    // Sends the user back to the authentication screen.
     private fun openAuthScreen() {
         startActivity(Intent(this, AuthActivity::class.java))
         finish()
     }
 
+    // Displays a short message at the bottom of the screen.
     private fun showMessage(message: String) {
         Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show()
     }

@@ -12,6 +12,7 @@ class TaskManager {
     private val auth = FirebaseAuth.getInstance()
     private val database = FirebaseDatabase.getInstance()
 
+    // Builds the authenticated database path for the current user's tasks.
     private fun tasksReference(): DatabaseReference {
         val userId = auth.currentUser?.uid
             ?: throw IllegalStateException("User is not authenticated")
@@ -22,6 +23,7 @@ class TaskManager {
             .child("tasks")
     }
 
+    // Listens to real-time task changes for the active user.
     fun observeTasks(
         onTasksLoaded: (List<Task>) -> Unit,
         onError: (Exception) -> Unit
@@ -49,6 +51,7 @@ class TaskManager {
         return listener
     }
 
+    // Detaches a Firebase listener when the screen is no longer visible.
     fun removeTasksListener(listener: ValueEventListener) {
         try {
             tasksReference().removeEventListener(listener)
@@ -56,6 +59,7 @@ class TaskManager {
         }
     }
 
+    // Saves a new task or reuses the provided id when editing an existing one.
     fun saveTask(
         task: Task,
         onSuccess: (Task) -> Unit,
@@ -81,6 +85,7 @@ class TaskManager {
         }
     }
 
+    // Replaces the stored task data with the latest local version.
     fun updateTask(
         task: Task,
         onSuccess: () -> Unit,
@@ -100,6 +105,7 @@ class TaskManager {
         }
     }
 
+    // Deletes a task from the current user's Firebase node.
     fun deleteTask(
         taskId: String,
         onSuccess: () -> Unit,

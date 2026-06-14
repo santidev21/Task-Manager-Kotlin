@@ -19,6 +19,7 @@ class TaskAdapter(
     private val onActionError: (String) -> Unit
 ) : ArrayAdapter<Task>(activity, R.layout.task_item, tasks) {
 
+    // Binds each row and wires the completion, edit, and delete actions.
     override fun getView(
         position: Int,
         convertView: View?,
@@ -100,6 +101,7 @@ class TaskAdapter(
         return view
     }
 
+    // Applies strike-through styling when a task is completed.
     private fun updateTaskStyle(
         task: Task,
         title: TextView,
@@ -119,6 +121,7 @@ class TaskAdapter(
         }
     }
 
+    // Keeps unfinished tasks above completed ones while preserving recency.
     private fun sortTasks() {
         tasks.sortWith(compareBy<Task> { it.completed }.thenByDescending { it.createdAt })
     }
