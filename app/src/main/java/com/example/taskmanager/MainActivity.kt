@@ -91,9 +91,26 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // Sorts the tasks and refreshes the adapter with the latest snapshot.
+    // Decrypts and sorts the tasks, then refreshes the adapter with the latest snapshot.
     private fun renderTasks(tasks: List<Task>) {
-        val sortedTasks = tasks.sortedWith(
+        val decryptedTasks = tasks.map { task ->
+            val latLng = if (task.encryptedCoords.isNotBlank()) {
+                try {
+                    CryptoUtil.decrypt(task.encryptedCoords).split(",").map { it.toDouble() }
+                } catch (_: Exception) { null }
+            } else null
+
+            task.copy(
+                name = try { CryptoUtil.decrypt(task.name) } catch (_: Exception) { task.name },
+                description = try { CryptoUtil.decrypt(task.description) } catch (_: Exception) { task.description },
+                locationName = if (task.locationName.isNotBlank()) {
+                    try { CryptoUtil.decrypt(task.locationName) } catch (_: Exception) { task.locationName }
+                } else "",
+                latitude = latLng?.getOrNull(0) ?: task.latitude,
+                longitude = latLng?.getOrNull(1) ?: task.longitude
+            )
+        }
+        val sortedTasks = decryptedTasks.sortedWith(
             compareBy<Task> { it.completed }.thenByDescending { it.createdAt }
         ).toMutableList()
 

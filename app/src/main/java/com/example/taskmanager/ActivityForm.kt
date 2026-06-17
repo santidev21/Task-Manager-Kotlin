@@ -117,14 +117,18 @@ class ActivityForm : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+            val lat = selectedLocation?.latitude ?: 0.0
+            val lng = selectedLocation?.longitude ?: 0.0
+            val coordsPlain = "$lat,$lng"
+            val coordsEncrypted = if (lat != 0.0 || lng != 0.0) CryptoUtil.encrypt(coordsPlain) else ""
+
             val task = Task(
                 id = editingTaskId,
-                name = taskName,
-                description = taskDescription,
+                name = CryptoUtil.encrypt(taskName),
+                description = CryptoUtil.encrypt(taskDescription),
                 completed = editingCompleted,
-                locationName = selectedLocationLabel,
-                latitude = selectedLocation?.latitude ?: 0.0,
-                longitude = selectedLocation?.longitude ?: 0.0,
+                locationName = if (selectedLocationLabel.isNotBlank()) CryptoUtil.encrypt(selectedLocationLabel) else "",
+                encryptedCoords = coordsEncrypted,
                 createdAt = if (isEditing && editingCreatedAt != 0L) editingCreatedAt else System.currentTimeMillis()
             )
 

@@ -127,9 +127,12 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 
-    // Opens the main screen after a successful registration.
+    // Opens the biometric verification screen after a successful registration.
     private fun openMainScreen() {
-        startActivity(Intent(this, MainActivity::class.java))
+        startActivity(
+            Intent(this, BiometricAuthActivity::class.java)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        )
         finish()
     }
 

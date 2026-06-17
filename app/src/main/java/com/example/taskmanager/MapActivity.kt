@@ -179,6 +179,21 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             }
     }
 
+    // Resolves encrypted coordinates to a LatLng or null.
+    private fun resolveCoordinates(task: Task): LatLng? {
+        if (task.encryptedCoords.isNotBlank()) {
+            try {
+                val parts = CryptoUtil.decrypt(task.encryptedCoords).split(",").map { it.toDouble() }
+                if (parts.size == 2 && (parts[0] != 0.0 || parts[1] != 0.0)) {
+                    return LatLng(parts[0], parts[1])
+                }
+            } catch (_: Exception) { }
+        }
+        return if (task.latitude != 0.0 || task.longitude != 0.0) {
+            LatLng(task.latitude, task.longitude)
+        } else null
+    }
+
     // Clears and redraws the map with the current location and saved task markers.
     private fun renderMap(statusMessage: String? = null) {
         val map = googleMap ?: return
@@ -193,34 +208,38 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             )
         }
 
-        latestTasks
-            .filter { it.latitude != 0.0 || it.longitude != 0.0 }
-            .forEach { task ->
-                val position = LatLng(task.latitude, task.longitude)
-                val snippet = when {
-                    task.locationName.isNotBlank() -> task.locationName
-                    task.description.isNotBlank() -> task.description
-                    else -> getString(R.string.task_location_label)
-                }
+        val tasksWithCoords = latestTasks.mapNotNull { task ->
+            resolveCoordinates(task)?.let { coords -> task to coords }
+        }
 
-                map.addMarker(
-                    MarkerOptions()
-                        .position(position)
-                        .title(task.name)
-                        .snippet(snippet)
-                )
+        tasksWithCoords.forEach { (task, coords) ->
+            val decryptedName = try { CryptoUtil.decrypt(task.name) } catch (_: Exception) { task.name }
+            val decryptedLocation = if (task.locationName.isNotBlank()) {
+                try { CryptoUtil.decrypt(task.locationName) } catch (_: Exception) { task.locationName }
+            } else ""
+            val decryptedDescription = try { CryptoUtil.decrypt(task.description) } catch (_: Exception) { task.description }
+            val snippet = when {
+                decryptedLocation.isNotBlank() -> decryptedLocation
+                decryptedDescription.isNotBlank() -> decryptedDescription
+                else -> getString(R.string.task_location_label)
             }
+
+            map.addMarker(
+                MarkerOptions()
+                    .position(coords)
+                    .title(decryptedName)
+                    .snippet(snippet)
+            )
+        }
 
         val target = currentLocation
-            ?: latestTasks.firstOrNull { it.latitude != 0.0 || it.longitude != 0.0 }?.let {
-                LatLng(it.latitude, it.longitude)
-            }
+            ?: tasksWithCoords.firstOrNull()?.second
             ?: LatLng(4.7110, -74.0721)
 
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(target, 15f))
 
         tvMapStatus.text = statusMessage ?: when {
-            latestTasks.any { it.latitude != 0.0 || it.longitude != 0.0 } -> getString(R.string.map_tasks_loaded)
+            tasksWithCoords.isNotEmpty() -> getString(R.string.map_tasks_loaded)
             latestTasks.isNotEmpty() -> getString(R.string.map_tasks_no_location)
             currentLocation != null -> getString(R.string.map_marker_title)
             else -> getString(R.string.map_location_unavailable)

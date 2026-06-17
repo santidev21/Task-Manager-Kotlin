@@ -76,4 +76,15 @@
     <string name="map_tasks_loaded">Tareas con ubicación mostradas en el mapa</string>
     <string name="map_tasks_no_location">No hay tareas con ubicación asociada</string>
     <string name="map_back">Volver</string>
+
+    <string name="biometric_screen_subtitle">Protege tu cuenta con verificación biométrica o PIN del dispositivo.</string>
+    <string name="biometric_prompt_title">Verificar identidad</string>
+    <string name="biometric_prompt_subtitle">Usa tu huella, rostro o PIN para acceder a la app.</string>
+    <string name="biometric_authenticate_button">Verificar identidad</string>
+    <string name="biometric_available">Tu dispositivo soporta autenticación biométrica o PIN. Presiona para verificar.</string>
+    <string name="biometric_enroll_required">No hay huella, rostro o PIN configurado. Presiona para configurarlo.</string>
+    <string name="biometric_enroll_button">Configurar bloqueo</string>
+    <string name="biometric_unavailable">El dispositivo no soporta biometría o PIN. Accediendo sin bloqueo local.</string>
+    <string name="biometric_required_message">Debes autenticarte para acceder a la aplicación.</string>
+    <string name="biometric_failed">No se pudo verificar la identidad. Intenta de nuevo.</string>
 </resources>

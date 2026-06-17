@@ -105,9 +105,12 @@ class AuthActivity : AppCompatActivity() {
         }
     }
 
-    // Opens the authenticated area and clears the back stack.
+    // Opens the biometric verification screen and clears the back stack.
     private fun openMainScreen() {
-        startActivity(Intent(this, MainActivity::class.java))
+        startActivity(
+            Intent(this, BiometricAuthActivity::class.java)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        )
         finish()
     }
 
