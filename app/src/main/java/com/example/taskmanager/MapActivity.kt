@@ -147,6 +147,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     // Reads the last known position and refreshes the map camera and markers.
+    @android.annotation.SuppressLint("MissingPermission")
     private fun showCurrentLocation() {
         if (!hasLocationPermission()) {
             requestLocationPermission()
@@ -183,7 +184,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun resolveCoordinates(task: Task): LatLng? {
         if (task.encryptedCoords.isNotBlank()) {
             try {
-                val parts = CryptoUtil.decrypt(task.encryptedCoords).split(",").map { it.toDouble() }
+                val parts = CryptoUtil.decrypt(this, task.encryptedCoords).split(",").map { it.toDouble() }
                 if (parts.size == 2 && (parts[0] != 0.0 || parts[1] != 0.0)) {
                     return LatLng(parts[0], parts[1])
                 }
@@ -213,11 +214,11 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
         tasksWithCoords.forEach { (task, coords) ->
-            val decryptedName = try { CryptoUtil.decrypt(task.name) } catch (_: Exception) { task.name }
+            val decryptedName = try { CryptoUtil.decrypt(this, task.name) } catch (_: Exception) { task.name }
             val decryptedLocation = if (task.locationName.isNotBlank()) {
-                try { CryptoUtil.decrypt(task.locationName) } catch (_: Exception) { task.locationName }
+                try { CryptoUtil.decrypt(this, task.locationName) } catch (_: Exception) { task.locationName }
             } else ""
-            val decryptedDescription = try { CryptoUtil.decrypt(task.description) } catch (_: Exception) { task.description }
+            val decryptedDescription = try { CryptoUtil.decrypt(this, task.description) } catch (_: Exception) { task.description }
             val snippet = when {
                 decryptedLocation.isNotBlank() -> decryptedLocation
                 decryptedDescription.isNotBlank() -> decryptedDescription

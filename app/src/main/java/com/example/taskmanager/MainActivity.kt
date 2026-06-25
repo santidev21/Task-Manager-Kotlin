@@ -96,15 +96,15 @@ class MainActivity : AppCompatActivity() {
         val decryptedTasks = tasks.map { task ->
             val latLng = if (task.encryptedCoords.isNotBlank()) {
                 try {
-                    CryptoUtil.decrypt(task.encryptedCoords).split(",").map { it.toDouble() }
+                    CryptoUtil.decrypt(this, task.encryptedCoords).split(",").map { it.toDouble() }
                 } catch (_: Exception) { null }
             } else null
 
             task.copy(
-                name = try { CryptoUtil.decrypt(task.name) } catch (_: Exception) { task.name },
-                description = try { CryptoUtil.decrypt(task.description) } catch (_: Exception) { task.description },
+                name = try { CryptoUtil.decrypt(this, task.name) } catch (_: Exception) { task.name },
+                description = try { CryptoUtil.decrypt(this, task.description) } catch (_: Exception) { task.description },
                 locationName = if (task.locationName.isNotBlank()) {
-                    try { CryptoUtil.decrypt(task.locationName) } catch (_: Exception) { task.locationName }
+                    try { CryptoUtil.decrypt(this, task.locationName) } catch (_: Exception) { task.locationName }
                 } else "",
                 latitude = latLng?.getOrNull(0) ?: task.latitude,
                 longitude = latLng?.getOrNull(1) ?: task.longitude

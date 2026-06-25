@@ -95,11 +95,12 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 
-    // Ensures the password meets the minimum Firebase length requirement.
+    // Ensures the password meets the minimum length and complexity requirements.
     private fun validatePassword(
         password: String,
         tilPassword: TextInputLayout
     ): Boolean {
+        val passwordPattern = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=_!*~-]).{6,}\$".toRegex()
         return when {
             password.isBlank() -> {
                 tilPassword.error = getString(R.string.auth_error_password_required)
@@ -107,6 +108,10 @@ class RegisterActivity : AppCompatActivity() {
             }
             password.length < 6 -> {
                 tilPassword.error = getString(R.string.register_error_password_short)
+                false
+            }
+            !passwordPattern.matches(password) -> {
+                tilPassword.error = "Debe tener al menos una mayúscula, minúscula, número y símbolo especial"
                 false
             }
             else -> true
